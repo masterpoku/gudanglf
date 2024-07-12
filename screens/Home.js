@@ -1,17 +1,59 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-
-const data = [
-  { id: '1', nama: 'Item 1', jenis: 'Type A', stok: '10', satuan: 'pcs', lastUpdate: '30/6/2024 13.09.42' },
-  { id: '2', nama: 'Item 2', jenis: 'Type B', stok: '20', satuan: 'kg', lastUpdate: '30/6/2024 14.09.42' },
-  // Tambahkan data lainnya di sini
-];
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Animated } from 'react-native';
+import axios from 'axios';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Home({ navigation }) {
-  const handleDetail = (item) => {
-    // Navigasi ke halaman detail dengan membawa parameter item
-    navigation.navigate('DetailItem', { item, origin: 'Home' });
+  const [data, setData] = useState([]);
+  const [fabOpen, setFabOpen] = useState(false);
+  const animation = useState(new Animated.Value(0))[0];
+  const [isMounted, setIsMounted] = useState(false);
 
+  useEffect(() => {
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      const fetchDataInterval = setInterval(() => {
+        fetchData();
+      }, 3000); // Ambil data setiap 5 detik
+    
+      // Membersihkan interval saat komponen tidak lagi digunakan
+      return () => clearInterval(fetchDataInterval);
+    }
+  }, [isMounted]);
+
+  const fetchData = async () => {
+    if (isMounted) {
+      try {
+        const response = await axios.get('https://c7b1-36-71-167-197.ngrok-free.app/gudang/API/api.php?aksi=baca_data_stok');
+        const formattedData = response.data.map(item => ({
+          id: item.id_barang,
+          nama: item.nama_barang,
+          jenis: item.jenis_barang,
+          stok: item.stok_barang,
+          satuan: item.satuan,
+          lastUpdate: item.last_update,
+        }));
+        setData(formattedData);
+      } catch (error) {
+        console.error('Error fetching data: ', error);
+      }
+    }
+  };
+
+  const handleDetail = (item) => {
+    navigation.navigate('DetailItem', { item, origin: 'Homeedit' });
+  };
+
+  const toggleFab = () => {
+    setFabOpen(!fabOpen);
+    Animated.spring(animation, {
+      toValue: fabOpen ? 0 : 1,
+      useNativeDriver: true,
+    }).start();
   };
 
   const renderItem = ({ item }) => (
@@ -26,6 +68,17 @@ export default function Home({ navigation }) {
       </TouchableOpacity>
     </View>
   );
+
+  const fabStyle = {
+    transform: [
+      {
+        scale: animation.interpolate({
+          inputRange: [0, 1],
+          outputRange: [1, 1.2],
+        }),
+      },
+    ],
+  };
 
   return (
     <View style={styles.container}>
@@ -43,6 +96,23 @@ export default function Home({ navigation }) {
         renderItem={renderItem}
         keyExtractor={item => item.id}
       />
+
+      {fabOpen && (
+        <View style={styles.fabMenu}>
+          <TouchableOpacity style={styles.fabOption} onPress={() => navigation.navigate('AddItem')}>
+            <Ionicons name="add-circle-outline" size={24} color="white" />
+            <Text style={styles.fabOptionText}>Tambah</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.fabOption} onPress={() => navigation.navigate('ExportItem', { origin: 'Stok Barang' })}>
+            <Ionicons name="create-outline" size={24} color="white" />
+            <Text style={styles.fabOptionText}>Export</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      <TouchableOpacity style={[styles.fab, fabStyle]} onPress={toggleFab}>
+        <Ionicons name={fabOpen ? "close" : "add"} size={24} color="white" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -52,7 +122,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: '#FFFFFF',
-    paddingTop:1
   },
   tableHeader: {
     flexDirection: 'row',
@@ -91,4 +160,31 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     fontWeight: 'bold',
   },
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: '#007bff',
+    borderRadius: 50,
+    padding: 15,
+    elevation: 5,
+  },
+  fabMenu: {
+    position: 'absolute',
+    bottom: 100,
+    right: 30,
+  },
+  fabOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    backgroundColor: '#007bff',
+    borderRadius: 5,
+    padding: 10,
+  },
+  fabOptionText: {
+    color: 'white',
+    marginLeft: 5,
+  },
 });
+

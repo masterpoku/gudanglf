@@ -1,24 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
-export default function OutItem({ navigation }) {
-  const data = [
-    { id: '1', nama: 'Item 1', jenis: 'Type A', stok: '10', satuan: 'pcs', lastUpdate: '30/6/2024 13.09.42' },
-    { id: '2', nama: 'Item 2', jenis: 'Type B', stok: '20', satuan: 'kg', lastUpdate: '30/6/2024 14.09.42' },
-    { id: '3', nama: 'Item 3', jenis: 'Type B', stok: '20', satuan: 'kg', lastUpdate: '30/6/2024 14.09.42' },
-    { id: '4', nama: 'Item 4', jenis: 'Type B', stok: '20', satuan: 'kg', lastUpdate: '30/6/2024 14.09.42' },
-  ];
+export default function OutItem({ route, navigation }) {
+  const { origin } = route.params;
 
+  const [data, setData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [stok, setStok] = useState('');
-  const [lastUpdate, setLastUpdate] = useState(new Date().toLocaleString());
+  function getCurrentDate() {
+    const today = new Date();
+    const year = today.getFullYear();
+    let month = today.getMonth() + 1;
+    let day = today.getDate();
 
-  const handleSave = () => {
+    // Pad month and day with leading zeros if needed
+    if (month < 10) {
+      month = `0${month}`;
+    }
+    if (day < 10) {
+      day = `0${day}`;
+    }
+
+    // Return the formatted date string
+    return `${year}-${month}-${day}`;
+  }
+
+  const [lastUpdate, setLastUpdate] = useState(getCurrentDate());
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch('https://c7b1-36-71-167-197.ngrok-free.app/gudang/API/api.php?aksi=baca_data_stok');
+      const jsonData = await response.json();
+      setData(jsonData);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSave = async () => {
     if (selectedItem) {
-      console.log('Saving item:', { ...selectedItem, stok, lastUpdate });
-      // Save logic here
-      navigation.goBack();
+      try {
+        let apiUrl = `https://c7b1-36-71-167-197.ngrok-free.app/gudang/API/api.php?aksi=${origin}add&id_barang=${selectedItem.id_barang}&nama_barang=${selectedItem.nama_barang}&jenis_barang=${selectedItem.jenis_barang}&satuan=${selectedItem.satuan}&last_update=${lastUpdate}`;
+        if (origin === 'BarangKeluar') {
+          apiUrl += `&stok_barang=${Number(selectedItem.stok_barang) - Number(stok)}`;
+        } else {
+          apiUrl += `&stok_barang=${Number(selectedItem.stok_barang) + Number(stok)}`;
+        }
+        console.log(apiUrl);
+        
+        const response = await fetch(apiUrl);
+        navigation.goBack();
+      } catch (error) {
+        console.error(error);
+      }
     } else {
       console.log('No item selected');
     }
@@ -26,18 +64,18 @@ export default function OutItem({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Barang Keluar</Text>
+      <Text style={styles.headerText}>{origin}</Text>
       <Picker
-        selectedValue={selectedItem ? selectedItem.id : ''}
+        selectedValue={selectedItem ? selectedItem.id_barang : ''}
         onValueChange={(itemId) => {
-          const selected = data.find(item => item.id === itemId);
+          const selected = data.find(item => item.id_barang === itemId);
           setSelectedItem(selected);
         }}
         style={styles.picker}
       >
         <Picker.Item label="Pilih Barang" value="" />
         {data.map((item) => (
-          <Picker.Item key={item.id} label={item.nama} value={item.id} />
+          <Picker.Item key={item.id_barang} label={item.nama_barang} value={item.id_barang} />
         ))}
       </Picker>
       <TextInput
@@ -90,3 +128,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+

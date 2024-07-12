@@ -1,22 +1,56 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet ,Alert} from 'react-native';
 
 export default function AddItem({ navigation }) {
   const [nama, setNama] = useState('');
   const [jenis, setJenis] = useState('');
   const [stok, setStok] = useState('');
   const [satuan, setSatuan] = useState('');
-  const [lastUpdate, setLastUpdate] = useState(new Date().toLocaleString());
+  function getCurrentDate() {
+    const today = new Date();
+    const year = today.getFullYear();
+    let month = today.getMonth() + 1;
+    let day = today.getDate();
 
+    // Pad month and day with leading zeros if needed
+    if (month < 10) {
+      month = `0${month}`;
+    }
+    if (day < 10) {
+      day = `0${day}`;
+    }
+
+    // Return the formatted date string
+    return `${year}-${month}-${day}`;
+  }
+
+  const [lastUpdate, setLastUpdate] = useState(getCurrentDate());
   const handleSave = () => {
-    console.log('Saving item:', { nama, jenis, stok, satuan, lastUpdate });
-    // Save logic here
-    navigation.goBack();
-  };
+    const apiUrl = `https://c7b1-36-71-167-197.ngrok-free.app/gudang/API/api.php?aksi=tambah_data_stok&nama_barang=${encodeURIComponent(nama)}&jenis_barang=${encodeURIComponent(jenis)}&stok_barang=${stok}&satuan=${encodeURIComponent(satuan)}&last_update=${lastUpdate}`;
+
+    fetch(apiUrl)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      Alert.alert('Successful', 'Barang Berhasil Ditambah');
+      setTimeout(() => {
+        navigation.navigate('Home');
+      }, 1000);
+    })
+    .catch(error => {
+      console.error('Error updating item:', error);
+      Alert.alert('Failed', 'Barang Gagal Ditambah');
+      // Handle error here
+    });
+};
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Add New Item</Text>
+      <Text style={styles.headerText}>Tambah Barang</Text>
       <TextInput
         style={styles.input}
         placeholder="Nama"

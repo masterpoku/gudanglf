@@ -76,7 +76,7 @@ export default function ExportItem({ route, navigation }) {
       </View>
 
       <TouchableOpacity style={styles.exportButton} onPress={handleExport}>
-        <Text style={styles.buttonText}>Export</Text>
+        <Text style={styles.buttonText}>Tampilkan</Text>
       </TouchableOpacity>
 
       {data.length > 0 && (

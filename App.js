@@ -14,7 +14,6 @@ import EditItemScreen from './screens/Edititem';
 import OutItem from './screens/Outitem';
 import ExportItem from './screens/Exportitem';
 
-
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -87,7 +86,7 @@ export default function App() {
         <Stack.Screen
           name="OutItem"
           component={OutItem}
-          options={{ headerTitle: 'Barang Keluar', headerShown: true, headerTintColor: '#fff', headerStyle: { backgroundColor: '#1e90ff' } }}
+          options={{ headerTitle: '', headerShown: true, headerTintColor: '#fff', headerStyle: { backgroundColor: '#1e90ff' } }}
         />
         <Stack.Screen
           name="ExportItem"

@@ -14,16 +14,22 @@ export default function DetailItem({ route, navigation }) {
 
   const handleEdit = () => {
     console.log('Edit item:', item);
-    navigation.navigate('EditItem', { item });
+    navigation.navigate('EditItem', { item,origin });
   };
 
   const handleDelete = () => {
     setModalVisible(true);
   };
 
-  const confirmDelete = () => {
-    console.log(`Delete item from ${origin}:`, item);
-    // Implement delete logic based on origin
+  const confirmDelete = async () => {
+    try {
+      const response = await fetch(`https://c7b1-36-71-167-197.ngrok-free.app/gudang/API/api.php?aksi=${origin}delete&id_barang=${item.id_unique}`);
+      console.log(response);
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
     setModalVisible(false);
     navigation.goBack();
   };

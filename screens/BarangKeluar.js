@@ -1,21 +1,60 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 export default function BarangKeluar() {
   const navigation = useNavigation();
   const [fabOpen, setFabOpen] = useState(false);
   const animation = useState(new Animated.Value(0))[0];
+  const [items, setItems] = useState([]);
+  const [isMounted, setIsMounted] = useState(false);
 
-  const items = [
-    { id: '1', nama: 'Item 1', jenis: 'Type A', stok: '100', satuan: 'pcs', lastUpdate: '2024-06-30' },
-    { id: '2', nama: 'Item 2', jenis: 'Type B', stok: '200', satuan: 'kg', lastUpdate: '2024-06-30' },
-  ];
+  useEffect(() => {
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      const fetchDataInterval = setInterval(() => {
+        fetchData();
+      }, 3000); // Ambil data setiap 5 detik
+    
+      // Membersihkan interval saat komponen tidak lagi digunakan
+      return () => clearInterval(fetchDataInterval);
+    }
+  }, [isMounted]);
+
+  const fetchData = async () => {
+   
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1; // getMonth() returns 0-11
+    const startDate = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01`;
+    const endDate = `${currentYear}-${String(currentMonth).padStart(2, '0')}-31`;
+
+    try {
+      const response = await axios.get(`https://c7b1-36-71-167-197.ngrok-free.app/gudang/API/api.php?aksi=tampilkan_barang_keluar_dengan_periode&tanggal_awal=${startDate}&tanggal_akhir=${endDate}`);
+      console.log(response);
+      const formattedData = response.data.map(item => ({
+        id_unique: item.id,
+        id: item.id_barang,
+        nama: item.nama_barang,
+        jenis: item.jenis_barang,
+        stok: item.stok_barang,
+        satuan: item.satuan,
+        lastUpdate: item.last_update,
+      }));
+      setItems(formattedData);
+    } catch (error) {
+      console.error('Error fetching data: ', error);
+    }
+   
+  };
 
   const handleDetail = (item) => {
     navigation.navigate('DetailItem', { item, origin: 'BarangKeluar' });
-
   };
 
   const toggleFab = () => {
@@ -50,9 +89,11 @@ export default function BarangKeluar() {
     ],
   };
 
+
+
   return (
     <View style={styles.container}>
-      <View style={styles.tableHeader}>
+       <View style={styles.tableHeader}>
         <Text style={styles.headerCell}>No</Text>
         <Text style={styles.headerCell}>Nama</Text>
         <Text style={styles.headerCell}>Jenis</Text>
@@ -60,19 +101,25 @@ export default function BarangKeluar() {
         <Text style={styles.headerCell}>Satuan</Text>
         <Text style={styles.headerCell}>Aksi</Text>
       </View>
-      <FlatList data={items} renderItem={renderItem} keyExtractor={(item) => item.id} style={styles.list} />
+      { items.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyStateText}>Data Tidak Ada</Text>
+        </View>
+      ) : (
+        <FlatList data={items} renderItem={renderItem} keyExtractor={(item) => item.id} style={styles.list} />
+      )}
 
       {fabOpen && (
         <View style={styles.fabMenu}>
-          <TouchableOpacity style={styles.fabOption} onPress={() => navigation.navigate('OutItem')}>
+          <TouchableOpacity style={styles.fabOption} onPress={() => navigation.navigate('OutItem',{ origin: 'BarangKeluar' })}>
             <Ionicons name="add-circle-outline" size={24} color="white" />
             <Text style={styles.fabOptionText}>Tambah</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.fabOption} onPress={() =>  navigation.navigate('ExportItem',{ origin: 'Barang Keluar' })}>
+          <TouchableOpacity style={styles.fabOption} onPress={() => navigation.navigate('ExportItem', { origin: 'Export Barang Keluar' })}>
             <Ionicons name="create-outline" size={24} color="white" />
             <Text style={styles.fabOptionText}>Export</Text>
           </TouchableOpacity>
-          </View>
+        </View>
       )}
 
       <TouchableOpacity style={[styles.fab, fabStyle]} onPress={toggleFab}>
@@ -146,4 +193,20 @@ const styles = StyleSheet.create({
     color: 'white',
     marginLeft: 5,
   },
+  noDataText: {
+    fontSize: 18,
+    textAlign: 'center',
+    paddingTop: 20,
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyStateText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#666',
+  },
 });
+
