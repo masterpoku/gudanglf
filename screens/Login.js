@@ -1,12 +1,25 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 
 const Login = ({ navigation }) => {
-  const handleLogin = () => {
-    // Logika autentikasi bisa ditambahkan di sini
+  const [password, setPassword] = useState('');
 
-    // Misalnya, jika autentikasi sukses, pindah ke halaman home
-    navigation.replace('Home');
+  const handleLogin = async () => {
+    try {
+      const response = await fetch(`https://server1.bayarsekolah.my.id/API/api.php?aksi=login&password=${password}`);
+      const data = await response.json();
+
+      if (data.status) {
+        // Jika autentikasi sukses, pindah ke halaman home
+        navigation.replace('Home');
+      } else {
+        // Jika autentikasi gagal, tampilkan pesan kesalahan
+        Alert.alert('Login Gagal', data.message);
+      }
+    } catch (error) {
+      // Tangani kesalahan jaringan atau lainnya
+      Alert.alert('Error', 'Terjadi kesalahan. Silakan coba lagi.');
+    }
   };
 
   return (
@@ -14,7 +27,13 @@ const Login = ({ navigation }) => {
       <Image source={require('../assets/gudang.png')} style={styles.logo} />
       <Text style={styles.title}>Aplikasi Gudang Material</Text>
       <View style={styles.inputContainer}>
-        <TextInput placeholder="Password" secureTextEntry style={styles.input} />
+        <TextInput
+          placeholder="Password"
+          secureTextEntry
+          style={styles.input}
+          value={password}
+          onChangeText={setPassword}
+        />
       </View>
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
@@ -32,7 +51,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   logo: {
-    width: 200, // Sesuaikan ukuran gambar
+    width: 200,
     height: 200,
     marginBottom: 30,
   },

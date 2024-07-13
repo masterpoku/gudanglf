@@ -105,7 +105,7 @@ export default function Home({ navigation }) {
             <Ionicons name="add-circle-outline" size={24} color="white" />
             <Text style={styles.fabOptionText}>Tambah</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.fabOption} onPress={() => navigation.navigate('ExportItem', { origin: 'Stok Barang' })}>
+          <TouchableOpacity style={styles.fabOption} onPress={() => navigation.navigate('ExportItem', { origin: 'StokBarang' })}>
             <Ionicons name="create-outline" size={24} color="white" />
             <Text style={styles.fabOptionText}>Export</Text>
           </TouchableOpacity>

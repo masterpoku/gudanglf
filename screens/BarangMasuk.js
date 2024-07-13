@@ -9,10 +9,23 @@ export default function BarangMasuk() {
   const [fabOpen, setFabOpen] = useState(false);
   const animation = new Animated.Value(0); // Removed unnecessary array wrapper
   const [items, setItems] = useState([]);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    fetchData();
+    setIsMounted(true);
+    return () => setIsMounted(false);
   }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      const fetchDataInterval = setInterval(() => {
+        fetchData();
+      }, 3000); // Ambil data setiap 5 detik
+    
+      // Membersihkan interval saat komponen tidak lagi digunakan
+      return () => clearInterval(fetchDataInterval);
+    }
+  }, [isMounted]);
 
   const fetchData = async () => {
     const currentYear = new Date().getFullYear();

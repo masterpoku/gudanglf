@@ -9,10 +9,24 @@ export default function BarangKeluar() {
   const [fabOpen, setFabOpen] = useState(false);
   const animation = new Animated.Value(0); // Removed unnecessary array wrapper
   const [items, setItems] = useState([]);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    fetchData();
+    setIsMounted(true);
+    return () => setIsMounted(false);
   }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      const fetchDataInterval = setInterval(() => {
+        fetchData();
+      }, 3000); // Ambil data setiap 5 detik
+    
+      // Membersihkan interval saat komponen tidak lagi digunakan
+      return () => clearInterval(fetchDataInterval);
+    }
+  }, [isMounted]);
+
 
   const fetchData = async () => {
     const currentYear = new Date().getFullYear();
@@ -91,7 +105,7 @@ export default function BarangKeluar() {
             <Ionicons name="add-circle-outline" size={24} color="white" />
             <Text style={styles.fabOptionText}>Tambah</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.fabOption} onPress={() => navigation.navigate('ExportItem', { origin: 'Export Barang Keluar' })}>
+          <TouchableOpacity style={styles.fabOption} onPress={() => navigation.navigate('ExportItem', { origin: 'BarangKeluar' })}>
             <Ionicons name="create-outline" size={24} color="white" />
             <Text style={styles.fabOptionText}>Export</Text>
           </TouchableOpacity>
