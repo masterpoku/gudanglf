@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, FlatList } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, FlatList, Alert } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { FontAwesome } from '@expo/vector-icons';
 import dayjs from 'dayjs';
+import * as FileSystem from 'expo-file-system';
 
 export default function ExportItem({ route, navigation }) {
   const [startDate, setStartDate] = useState(null);
@@ -70,9 +71,31 @@ export default function ExportItem({ route, navigation }) {
     }
   };
 
-  const download = () => {
-    console.log('Download data from', dayjs(startDate).format('YYYY-MM-DD'), 'to', dayjs(endDate).format('YYYY-MM-DD'));
-    // Implement download function here
+  const download = async () => {
+    if (data.length === 0) {
+      Alert.alert('No data to download', 'Please fetch data first before downloading.');
+      return;
+    }
+
+    const fileUri = 'https://server1.bayarsekolah.my.id/pdf.php'; // Replace with your download endpoint
+    const startFormatted = dayjs(startDate).format('YYYY-MM-DD');
+    const endFormatted = dayjs(endDate).format('YYYY-MM-DD');
+    const fileUrl = `${fileUri}?tanggal_awal=${startFormatted}&tanggal_akhir=${endFormatted}&aksi=${origin}`;
+
+    try {
+      const fileInfo = await FileSystem.getInfoAsync(fileUrl);
+      const downloadResumable = FileSystem.createDownloadResumable(
+        fileUrl,
+        FileSystem.documentDirectory + `export_${startFormatted}_${endFormatted}.pdf`
+      );
+
+      const { uri } = await downloadResumable.downloadAsync();
+      console.log('Downloaded to:', uri);
+      Alert.alert('Download complete', 'File has been downloaded successfully.');
+    } catch (error) {
+      console.error('Download error:', error);
+      Alert.alert('Download failed', 'Failed to download the file. Please try again later.');
+    }
   };
 
   const renderItem = ({ item }) => (

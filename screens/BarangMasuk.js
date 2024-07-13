@@ -7,7 +7,7 @@ import axios from 'axios';
 export default function BarangMasuk() {
   const navigation = useNavigation();
   const [fabOpen, setFabOpen] = useState(false);
-  const animation = useState(new Animated.Value(0))[0];
+  const animation = new Animated.Value(0); // Removed unnecessary array wrapper
   const [items, setItems] = useState([]);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ export default function BarangMasuk() {
     const endDate = `${currentYear}-${String(currentMonth).padStart(2, '0')}-31`;
 
     try {
-      const response = await axios.get(`https://server1.bayarsekolah.my.id/API/api.php?aksi=BarangMasukexport&tanggal_awal=2024-07-01&tanggal_akhir=2024-07-30`);
+      const response = await axios.get(`https://server1.bayarsekolah.my.id/API/api.php?aksi=BarangMasukexport&tanggal_awal=${startDate}&tanggal_akhir=${endDate}`);
       const formattedData = response.data.map(item => ({
         id_unique: item.id,
         id: item.id_barang,
@@ -48,6 +48,7 @@ export default function BarangMasuk() {
       useNativeDriver: true,
     }).start();
   };
+
   const renderItem = ({ item, index }) => (
     <View style={styles.row}>
       <Text style={styles.cell}>{index + 1}</Text>
@@ -82,11 +83,11 @@ export default function BarangMasuk() {
         <Text style={styles.headerCell}>Satuan</Text>
         <Text style={styles.headerCell}>Aksi</Text>
       </View>
-      <FlatList data={items} renderItem={renderItem} keyExtractor={(item) => item.id} style={styles.list} />
+      <FlatList data={items} renderItem={renderItem} keyExtractor={(item) => item.id_unique.toString()} style={styles.list} />
 
       {fabOpen && (
         <View style={styles.fabMenu}>
-          <TouchableOpacity style={styles.fabOption} onPress={() =>  navigation.navigate('OutItem',{ origin: 'BarangMasuk' })}>
+          <TouchableOpacity style={styles.fabOption} onPress={() =>  navigation.navigate('OutItem', { origin: 'BarangMasuk' })}>
             <Ionicons name="add-circle-outline" size={24} color="white" />
             <Text style={styles.fabOptionText}>Tambah</Text>
           </TouchableOpacity>
