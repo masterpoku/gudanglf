@@ -1,32 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 
 export default function BarangMasuk() {
   const navigation = useNavigation();
-  const route = useRoute();
   const [fabOpen, setFabOpen] = useState(false);
   const animation = useState(new Animated.Value(0))[0];
   const [items, setItems] = useState([]);
-  const [isMounted, setIsMounted] = useState(false);
-  
-  useEffect(() => {
-    setIsMounted(true);
-    return () => setIsMounted(false);
-  }, []);
 
   useEffect(() => {
-    if (isMounted) {
-      const fetchDataInterval = setInterval(() => {
-        fetchData();
-      }, 3000); // Ambil data setiap 5 detik
-    
-      // Membersihkan interval saat komponen tidak lagi digunakan
-      return () => clearInterval(fetchDataInterval);
-    }
-  }, [isMounted]);
+    fetchData();
+  }, []);
+
   const fetchData = async () => {
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1; // getMonth() returns 0-11
@@ -34,7 +21,7 @@ export default function BarangMasuk() {
     const endDate = `${currentYear}-${String(currentMonth).padStart(2, '0')}-31`;
 
     try {
-      const response = await axios.get(`https://c7b1-36-71-167-197.ngrok-free.app/gudang/API/api.php?aksi=tampilkan_barang_masuk_dengan_periode&tanggal_awal=${startDate}&tanggal_akhir=${endDate}`);
+      const response = await axios.get(`https://server1.bayarsekolah.my.id/API/api.php?aksi=BarangMasukexport&tanggal_awal=2024-07-01&tanggal_akhir=2024-07-30`);
       const formattedData = response.data.map(item => ({
         id_unique: item.id,
         id: item.id_barang,
@@ -61,10 +48,9 @@ export default function BarangMasuk() {
       useNativeDriver: true,
     }).start();
   };
-
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item, index }) => (
     <View style={styles.row}>
-      <Text style={styles.cell}>{item.id}</Text>
+      <Text style={styles.cell}>{index + 1}</Text>
       <Text style={styles.cell}>{item.nama}</Text>
       <Text style={styles.cell}>{item.jenis}</Text>
       <Text style={styles.cell}>{item.stok}</Text>
@@ -96,13 +82,7 @@ export default function BarangMasuk() {
         <Text style={styles.headerCell}>Satuan</Text>
         <Text style={styles.headerCell}>Aksi</Text>
       </View>
-      {items.length === 0 ? (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyStateText}>Data Tidak Ada</Text>
-        </View>
-      ) : (
-        <FlatList data={items} renderItem={renderItem} keyExtractor={(item) => item.id} style={styles.list} />
-      )}
+      <FlatList data={items} renderItem={renderItem} keyExtractor={(item) => item.id} style={styles.list} />
 
       {fabOpen && (
         <View style={styles.fabMenu}>
@@ -188,15 +168,4 @@ const styles = StyleSheet.create({
     color: 'white',
     marginLeft: 5,
   },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyStateText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#666',
-  },
 });
-

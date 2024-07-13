@@ -28,8 +28,9 @@ export default function Home({ navigation }) {
   const fetchData = async () => {
     if (isMounted) {
       try {
-        const response = await axios.get('https://c7b1-36-71-167-197.ngrok-free.app/gudang/API/api.php?aksi=baca_data_stok');
+        const response = await axios.get('https://server1.bayarsekolah.my.id/API/api.php?aksi=baca_data_stok');
         const formattedData = response.data.map(item => ({
+          id_unique: item.id,
           id: item.id_barang,
           nama: item.nama_barang,
           jenis: item.jenis_barang,
@@ -56,9 +57,9 @@ export default function Home({ navigation }) {
     }).start();
   };
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item, index }) => (
     <View style={styles.row}>
-      <Text style={styles.cell}>{item.id}</Text>
+      <Text style={styles.cell}>{index + 1}</Text>
       <Text style={styles.cell}>{item.nama}</Text>
       <Text style={styles.cell}>{item.jenis}</Text>
       <Text style={styles.cell}>{item.stok}</Text>
@@ -68,6 +69,7 @@ export default function Home({ navigation }) {
       </TouchableOpacity>
     </View>
   );
+
 
   const fabStyle = {
     transform: [

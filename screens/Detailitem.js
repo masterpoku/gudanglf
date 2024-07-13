@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal,Alert } from 'react-native';
 export default function DetailItem({ route, navigation }) {
   const { item, origin } = route.params || {};
   const [modalVisible, setModalVisible] = useState(false);
@@ -23,15 +23,22 @@ export default function DetailItem({ route, navigation }) {
 
   const confirmDelete = async () => {
     try {
-      const response = await fetch(`https://c7b1-36-71-167-197.ngrok-free.app/gudang/API/api.php?aksi=${origin}delete&id_barang=${item.id_unique}`);
-      console.log(response);
+      const response = await fetch(`https://c0e5-36-74-172-137.ngrok-free.app/gudang/API/api.php?aksi=${origin}delete&id_barang=${item.id_unique}`);
+      console.log(item);
       const data = await response.json();
       console.log(data);
     } catch (error) {
       console.error(error);
     }
     setModalVisible(false);
-    navigation.goBack();
+    Alert.alert(
+      'Sukses',
+      'Data berhasil dihapus',
+      [
+        { text: 'OK', onPress: () => navigation.goBack() },
+      ],
+      { cancelable: false },
+    );
   };
 
   return (

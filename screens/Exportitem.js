@@ -36,20 +36,43 @@ export default function ExportItem({ route, navigation }) {
     hideDatePicker();
   };
 
-  const handleExport = () => {
-    // Contoh data, sesuaikan dengan data sebenarnya
-    console.log('Exporting data from', dayjs(startDate).format('YYYY-MM-DD'), 'to', dayjs(endDate).format('YYYY-MM-DD'));
-    const exampleData = [
-      { id: '1', nama: 'Item A', jenis: 'Type 1', stok: 100, satuan: 'pcs', lastUpdate: dayjs().format('YYYY-MM-DD') },
-      { id: '2', nama: 'Item B', jenis: 'Type 2', stok: 200, satuan: 'pcs', lastUpdate: dayjs().format('YYYY-MM-DD') },
-    ];
-    setData(exampleData);
+  const handleExport = async () => {
+    if (!startDate || !endDate) {
+      console.log('Please select both start and end dates');
+      return;
+    }
+
+    const start = dayjs(startDate).format('YYYY-MM-DD');
+    const end = dayjs(endDate).format('YYYY-MM-DD');
+    const url = `https://server1.bayarsekolah.my.id/API/api.php?aksi=${origin}export&tanggal_awal=${start}&tanggal_akhir=${end}`;
+    console.log('Fetching data from URL:', url);
+
+    try {
+      const response = await fetch(url);
+      const result = await response.json();
+      console.log('API response:', result);
+
+      if (Array.isArray(result)) {
+        const formattedData = result.map(item => ({
+          id: item.id,
+          nama: item.nama_barang,
+          jenis: item.jenis_barang,
+          stok: item.stok_barang,
+          satuan: item.satuan,
+          lastUpdate: item.last_update,
+        }));
+        setData(formattedData);
+      } else {
+        console.error('Expected an array but received:', result);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   };
 
   const download = () => {
-    // Contoh data, sesuaikan dengan data sebenarnya
     console.log('Download data from', dayjs(startDate).format('YYYY-MM-DD'), 'to', dayjs(endDate).format('YYYY-MM-DD'));
-
+    // Implement download function here
   };
 
   const renderItem = ({ item }) => (
@@ -65,7 +88,7 @@ export default function ExportItem({ route, navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.originText}>{origin}</Text>
-    
+
       <View style={styles.card}>
         <TouchableOpacity onPress={() => showDatePicker('start')} style={styles.dateButton}>
           <Text>{startDate ? dayjs(startDate).format('YYYY-MM-DD') : 'Select Start Date'}</Text>

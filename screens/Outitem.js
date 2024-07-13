@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet,Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
 export default function OutItem({ route, navigation }) {
@@ -33,7 +33,7 @@ export default function OutItem({ route, navigation }) {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('https://c7b1-36-71-167-197.ngrok-free.app/gudang/API/api.php?aksi=baca_data_stok');
+      const response = await fetch('https://server1.bayarsekolah.my.id/API/api.php?aksi=baca_data_stok');
       const jsonData = await response.json();
       setData(jsonData);
     } catch (error) {
@@ -44,17 +44,17 @@ export default function OutItem({ route, navigation }) {
   const handleSave = async () => {
     if (selectedItem) {
       try {
-        let apiUrl = `https://c7b1-36-71-167-197.ngrok-free.app/gudang/API/api.php?aksi=${origin}add&id_barang=${selectedItem.id_barang}&nama_barang=${selectedItem.nama_barang}&jenis_barang=${selectedItem.jenis_barang}&satuan=${selectedItem.satuan}&last_update=${lastUpdate}`;
-        if (origin === 'BarangKeluar') {
-          apiUrl += `&stok_barang=${Number(selectedItem.stok_barang) - Number(stok)}`;
-        } else {
-          apiUrl += `&stok_barang=${Number(selectedItem.stok_barang) + Number(stok)}`;
-        }
-        console.log(apiUrl);
-        
-        const response = await fetch(apiUrl);
-        navigation.goBack();
-      } catch (error) {
+        const response = await fetch(`https://server1.bayarsekolah.my.id/API/api.php?aksi=${origin}add&id_barang=${selectedItem.id_barang}&nama_barang=${selectedItem.nama_barang}&jenis_barang=${selectedItem.jenis_barang}&stok_barang=${stok}&satuan=${selectedItem.satuan}&last_update=${lastUpdate}`);
+       console.log(response);
+       Alert.alert(
+        'Sukses',
+        'Menambah Data',
+        [
+          { text: 'OK', onPress: () => navigation.goBack() },
+        ],
+        { cancelable: false },
+      );
+        } catch (error) {
         console.error(error);
       }
     } else {

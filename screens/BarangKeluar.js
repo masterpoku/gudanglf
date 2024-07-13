@@ -9,34 +9,19 @@ export default function BarangKeluar() {
   const [fabOpen, setFabOpen] = useState(false);
   const animation = useState(new Animated.Value(0))[0];
   const [items, setItems] = useState([]);
-  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
-    return () => setIsMounted(false);
+    fetchData();
   }, []);
 
-  useEffect(() => {
-    if (isMounted) {
-      const fetchDataInterval = setInterval(() => {
-        fetchData();
-      }, 3000); // Ambil data setiap 5 detik
-    
-      // Membersihkan interval saat komponen tidak lagi digunakan
-      return () => clearInterval(fetchDataInterval);
-    }
-  }, [isMounted]);
-
   const fetchData = async () => {
-   
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1; // getMonth() returns 0-11
     const startDate = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01`;
     const endDate = `${currentYear}-${String(currentMonth).padStart(2, '0')}-31`;
 
     try {
-      const response = await axios.get(`https://c7b1-36-71-167-197.ngrok-free.app/gudang/API/api.php?aksi=tampilkan_barang_keluar_dengan_periode&tanggal_awal=${startDate}&tanggal_akhir=${endDate}`);
-      console.log(response);
+      const response = await axios.get(`https://server1.bayarsekolah.my.id/API/api.php?aksi=BarangKeluarexport&tanggal_awal=2024-07-01&tanggal_akhir=2024-07-30`);
       const formattedData = response.data.map(item => ({
         id_unique: item.id,
         id: item.id_barang,
@@ -50,7 +35,6 @@ export default function BarangKeluar() {
     } catch (error) {
       console.error('Error fetching data: ', error);
     }
-   
   };
 
   const handleDetail = (item) => {
@@ -65,9 +49,9 @@ export default function BarangKeluar() {
     }).start();
   };
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item, index }) => (
     <View style={styles.row}>
-      <Text style={styles.cell}>{item.id}</Text>
+      <Text style={styles.cell}>{index + 1}</Text>
       <Text style={styles.cell}>{item.nama}</Text>
       <Text style={styles.cell}>{item.jenis}</Text>
       <Text style={styles.cell}>{item.stok}</Text>
@@ -89,11 +73,9 @@ export default function BarangKeluar() {
     ],
   };
 
-
-
   return (
     <View style={styles.container}>
-       <View style={styles.tableHeader}>
+      <View style={styles.tableHeader}>
         <Text style={styles.headerCell}>No</Text>
         <Text style={styles.headerCell}>Nama</Text>
         <Text style={styles.headerCell}>Jenis</Text>
@@ -101,17 +83,11 @@ export default function BarangKeluar() {
         <Text style={styles.headerCell}>Satuan</Text>
         <Text style={styles.headerCell}>Aksi</Text>
       </View>
-      { items.length === 0 ? (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyStateText}>Data Tidak Ada</Text>
-        </View>
-      ) : (
-        <FlatList data={items} renderItem={renderItem} keyExtractor={(item) => item.id} style={styles.list} />
-      )}
+      <FlatList data={items} renderItem={renderItem} keyExtractor={(item) => item.id} style={styles.list} />
 
       {fabOpen && (
         <View style={styles.fabMenu}>
-          <TouchableOpacity style={styles.fabOption} onPress={() => navigation.navigate('OutItem',{ origin: 'BarangKeluar' })}>
+          <TouchableOpacity style={styles.fabOption} onPress={() => navigation.navigate('OutItem',{ origin: 'Barang Keluar' })}>
             <Ionicons name="add-circle-outline" size={24} color="white" />
             <Text style={styles.fabOptionText}>Tambah</Text>
           </TouchableOpacity>
@@ -193,20 +169,4 @@ const styles = StyleSheet.create({
     color: 'white',
     marginLeft: 5,
   },
-  noDataText: {
-    fontSize: 18,
-    textAlign: 'center',
-    paddingTop: 20,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyStateText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#666',
-  },
 });
-

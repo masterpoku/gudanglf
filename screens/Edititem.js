@@ -34,7 +34,7 @@ export default function EditItemScreen({ route }) {
 
   const handleSave = () => {
     // Construct URL for API call
-    const apiUrl = `https://c7b1-36-71-167-197.ngrok-free.app/gudang/API/api.php?` +
+    const apiUrl = `https://server1.bayarsekolah.my.id/API/api.php?` +
                    `aksi=${origin}&id_barang=${id}` +
                    `&nama_barang=${encodeURIComponent(nama)}` +
                    `&jenis_barang=${encodeURIComponent(jenis)}` +
