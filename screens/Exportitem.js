@@ -54,12 +54,12 @@ export default function ExportItem({ route, navigation }) {
 
       if (Array.isArray(result)) {
         const formattedData = result.map(item => ({
-          id: item.id,
-          nama: item.nama_barang,
-          jenis: item.jenis_barang,
-          stok: item.stok_barang,
-          satuan: item.satuan,
-          lastUpdate: item.last_update,
+          id: item.id || 'No Data',
+          nama: item.nama_barang || 'No Data',
+          jenis: item.jenis_barang || 'No Data',
+          stok: item.stok_barang || 'No Data',
+          satuan: item.satuan || 'No Data',
+          lastUpdate: item.last_update || 'No Data',
         }));
         setData(formattedData);
       } else {

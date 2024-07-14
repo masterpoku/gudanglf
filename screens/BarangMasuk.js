@@ -36,13 +36,13 @@ export default function BarangMasuk() {
     try {
       const response = await axios.get(`https://server1.bayarsekolah.my.id/API/api.php?aksi=BarangMasukexport&tanggal_awal=${startDate}&tanggal_akhir=${endDate}`);
       const formattedData = response.data.map(item => ({
-        id_unique: item.id,
-        id: item.id_barang,
-        nama: item.nama_barang,
-        jenis: item.jenis_barang,
-        stok: item.stok_barang,
-        satuan: item.satuan,
-        lastUpdate: item.last_update,
+        id_unique: item.id || 'No Data',
+        id: item.id_barang || 'No Data',
+        nama: item.nama_barang || 'No Data',
+        jenis: item.jenis_barang || 'No Data',
+        stok: item.stok_barang || 'No Data',
+        satuan: item.satuan || 'No Data',
+        lastUpdate: item.last_update || 'No Data',
       }));
       setItems(formattedData);
     } catch (error) {
