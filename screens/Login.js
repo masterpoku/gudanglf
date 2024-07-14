@@ -29,6 +29,7 @@ const Login = ({ navigation }) => {
       <View style={styles.inputContainer}>
         <TextInput
           placeholder="Password"
+          keyboardType="numeric"
           secureTextEntry
           style={styles.input}
           value={password}
