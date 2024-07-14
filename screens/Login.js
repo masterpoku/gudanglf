@@ -28,7 +28,7 @@ const Login = ({ navigation }) => {
       <Text style={styles.title}>Aplikasi Gudang Material</Text>
       <View style={styles.inputContainer}>
         <TextInput
-          placeholder="Password"
+          placeholder="PIN"
           keyboardType="numeric"
           secureTextEntry
           style={styles.input}
