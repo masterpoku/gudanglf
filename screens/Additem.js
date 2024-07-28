@@ -26,7 +26,7 @@ export default function AddItem({ navigation }) {
 
   const [lastUpdate, setLastUpdate] = useState(getCurrentDate());
   const handleSave = () => {
-    const apiUrl = `https://server1.bayarsekolah.my.id/API/api.php?aksi=tambah_data_stok&nama_barang=${encodeURIComponent(nama)}&jenis_barang=${encodeURIComponent(jenis)}&stok_barang=${stok}&satuan=${encodeURIComponent(satuan)}&last_update=${lastUpdate}`;
+    const apiUrl = `https://cloudside.id/sindy/API/api.php?aksi=tambah_data_stok&nama_barang=${encodeURIComponent(nama)}&jenis_barang=${encodeURIComponent(jenis)}&stok_barang=${stok}&satuan=${encodeURIComponent(satuan)}&last_update=${lastUpdate}`;
     fetch(apiUrl)
     .then(response => {
       if (!response.ok) {

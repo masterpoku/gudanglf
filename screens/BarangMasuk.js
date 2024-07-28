@@ -34,7 +34,7 @@ export default function BarangMasuk() {
     const endDate = `${currentYear}-${String(currentMonth).padStart(2, '0')}-31`;
 
     try {
-      const response = await axios.get(`https://server1.bayarsekolah.my.id/API/api.php?aksi=BarangMasukexport&tanggal_awal=${startDate}&tanggal_akhir=${endDate}`);
+      const response = await axios.get(`https://cloudside.id/sindy/API/api.php?aksi=BarangMasukexport&tanggal_awal=${startDate}&tanggal_akhir=${endDate}`);
       const formattedData = response.data.map(item => ({
         id_unique: item.id || 'No Data',
         id: item.id_barang || 'No Data',

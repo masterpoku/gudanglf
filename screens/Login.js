@@ -6,15 +6,15 @@ const Login = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch(`https://server1.bayarsekolah.my.id/API/api.php?aksi=login&password=${password}`);
-      const data = await response.json();
-
-      if (data.status) {
+      const response = await fetch(`https://cloudside.id/sindy/API/api.php?aksi=login&password=${password}`);
+      const result = await response.json();
+      console.log(result.data);
+      if (response.status === 200 && result.data && result.data.length > 0 && result.data[0].password === password) {
         // Jika autentikasi sukses, pindah ke halaman home
         navigation.replace('Home');
       } else {
         // Jika autentikasi gagal, tampilkan pesan kesalahan
-        Alert.alert('Login Gagal', data.message);
+        Alert.alert('Login Gagal', 'PIN salah. Silakan coba lagi.');
       }
     } catch (error) {
       // Tangani kesalahan jaringan atau lainnya

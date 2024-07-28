@@ -34,7 +34,7 @@ export default function EditItemScreen({ route }) {
 
   const handleSave = () => {
     // Construct URL for API call
-    const apiUrl = `https://server1.bayarsekolah.my.id/API/api.php?` +
+    const apiUrl = `https://cloudside.id/sindy/API/api.php?` +
                    `aksi=${origin}&id_barang=${id}` +
                    `&nama_barang=${encodeURIComponent(nama)}` +
                    `&jenis_barang=${encodeURIComponent(jenis)}` +

@@ -44,7 +44,7 @@ export default function ExportItem({ route, navigation }) {
 
     const start = dayjs(startDate).format('YYYY-MM-DD');
     const end = dayjs(endDate).format('YYYY-MM-DD');
-    const url = `https://server1.bayarsekolah.my.id/API/api.php?aksi=${origin}export&tanggal_awal=${start}&tanggal_akhir=${end}`;
+    const url = `https://cloudside.id/sindy/API/api.php?aksi=${origin}export&tanggal_awal=${start}&tanggal_akhir=${end}`;
     console.log('Fetching data from URL:', url);
 
     try {
@@ -78,7 +78,7 @@ export default function ExportItem({ route, navigation }) {
 
     const startFormatted = dayjs(startDate).format('YYYY-MM-DD');
     const endFormatted = dayjs(endDate).format('YYYY-MM-DD');
-    const fileUrl = `https://server1.bayarsekolah.my.id/pdf.php?tanggal_awal=${startFormatted}&tanggal_akhir=${endFormatted}&aksi=${origin}`;
+    const fileUrl = `https://cloudside.id/sindy/pdf.php?tanggal_awal=${startFormatted}&tanggal_akhir=${endFormatted}&aksi=${origin}`;
     
     try {
       Linking.openURL(fileUrl);

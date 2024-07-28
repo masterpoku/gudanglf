@@ -28,7 +28,7 @@ export default function Home({ navigation }) {
   const fetchData = async () => {
     if (isMounted) {
       try {
-        const response = await axios.get('https://server1.bayarsekolah.my.id/API/api.php?aksi=baca_data_stok');
+        const response = await axios.get('https://cloudside.id/sindy/API/api.php?aksi=baca_data_stok');
         const formattedData = response.data.map(item => ({
           id_unique: item.id || 'No Data',
           id: item.id_barang || 'No Data',

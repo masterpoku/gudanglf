@@ -33,7 +33,7 @@ export default function OutItem({ route, navigation }) {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('https://server1.bayarsekolah.my.id/API/api.php?aksi=baca_data_stok');
+      const response = await fetch('https://cloudside.id/sindy/API/api.php?aksi=baca_data_stok');
       const jsonData = await response.json();
       setData(jsonData);
     } catch (error) {
@@ -44,7 +44,7 @@ export default function OutItem({ route, navigation }) {
   const handleSave = async () => {
     if (selectedItem) {
       try {
-        const response = await fetch(`https://server1.bayarsekolah.my.id/API/api.php?aksi=${origin}add&id_barang=${selectedItem.id_barang}&nama_barang=${selectedItem.nama_barang}&jenis_barang=${selectedItem.jenis_barang}&stok_barang=${stok}&satuan=${selectedItem.satuan}&last_update=${lastUpdate}`);
+        const response = await fetch(`https://cloudside.id/sindy/API/api.php?aksi=${origin}add&id_barang=${selectedItem.id_barang}&nama_barang=${selectedItem.nama_barang}&jenis_barang=${selectedItem.jenis_barang}&stok_barang=${stok}&satuan=${selectedItem.satuan}&last_update=${lastUpdate}`);
        console.log(response);
        Alert.alert(
         'Sukses',
