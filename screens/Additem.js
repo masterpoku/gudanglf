@@ -4,8 +4,9 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet ,Alert} from 'react
 export default function AddItem({ navigation }) {
   const [nama, setNama] = useState('');
   const [jenis, setJenis] = useState('');
-  const [stok, setStok] = useState('');
+  const [stok, setStok] = useState('0');
   const [satuan, setSatuan] = useState('');
+  const [disabled, setDisabled] = useState(true);
   function getCurrentDate() {
     const today = new Date();
     const year = today.getFullYear();
@@ -68,6 +69,7 @@ export default function AddItem({ navigation }) {
         value={stok}
         onChangeText={setStok}
         keyboardType="numeric"
+        editable={!disabled}
       />
       <TextInput
         style={styles.input}
@@ -113,3 +115,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
